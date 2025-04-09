@@ -74,8 +74,13 @@ const Register = () => {
 
   const onSubmit = (data: FormValues) => {
     setIsLoading(true);
-    const { confirmPassword, ...userData } = data;
-    registerMutation.mutate(userData);
+    // Create a new object with required properties to ensure type safety
+    const registerData = {
+      name: data.name,
+      email: data.email,
+      password: data.password
+    };
+    registerMutation.mutate(registerData);
   };
 
   return (

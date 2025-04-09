@@ -65,7 +65,12 @@ const Login = () => {
 
   const onSubmit = (data: FormValues) => {
     setIsLoading(true);
-    loginMutation.mutate(data);
+    // Ensure data has the required properties with appropriate types
+    const loginData = {
+      email: data.email,
+      password: data.password
+    };
+    loginMutation.mutate(loginData);
   };
 
   return (
