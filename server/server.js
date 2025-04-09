@@ -7,9 +7,6 @@ const authRoutes = require('./routes/auth');
 const { products } = require('../src/data/products');
 const Product = require('./models/Product');
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
 // Middleware
@@ -20,20 +17,40 @@ app.use(express.json());
 app.use('/api/products', productsRoutes);
 app.use('/api/auth', authRoutes);
 
-// Seed database if empty
-const seedDatabase = async () => {
-  try {
-    const count = await Product.countDocuments();
-    if (count === 0) {
-      await Product.insertMany(products);
-      console.log('Database seeded with initial products');
+// Connect to MongoDB
+let isConnected = false;
+
+const initializeDatabase = async () => {
+  if (!isConnected) {
+    try {
+      await connectDB();
+      isConnected = true;
+      
+      // Seed database if empty
+      try {
+        const count = await Product.countDocuments();
+        if (count === 0) {
+          await Product.insertMany(products);
+          console.log('Database seeded with initial products');
+        }
+      } catch (error) {
+        console.error(`Error seeding database: ${error.message}`);
+      }
+    } catch (error) {
+      console.error(`Failed to initialize database: ${error.message}`);
     }
-  } catch (error) {
-    console.error('Error seeding database:', error);
   }
 };
 
-seedDatabase();
+// Add a health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    mongo: isConnected ? 'connected' : 'disconnected' 
+  });
+});
+
+initializeDatabase();
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
