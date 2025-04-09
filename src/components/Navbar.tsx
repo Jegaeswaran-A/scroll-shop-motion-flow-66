@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, X } from 'lucide-react';
+import { ShoppingCart, Search, Menu, X, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import CartDrawer from './CartDrawer';
 import { cn } from '@/lib/utils';
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { itemCount } = useCart();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,10 +24,22 @@ const Navbar = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
+    
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    window.location.href = '/';
+  };
 
   return (
     <>
@@ -56,6 +69,32 @@ const Navbar = () => {
                 </span>
               )}
             </button>
+            
+            {isLoggedIn ? (
+              <div className="relative group">
+                <button className="hover:text-primary transition-colors">
+                  <User size={20} />
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-background shadow-lg rounded-md py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 hover:bg-secondary transition-colors"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="hidden md:flex space-x-2">
+                <Link to="/login">
+                  <Button variant="ghost" size="sm">Login</Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm">Register</Button>
+                </Link>
+              </div>
+            )}
+            
             <button 
               className="md:hidden hover:text-primary transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -73,6 +112,25 @@ const Navbar = () => {
               <Link to="/#new-arrivals" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>New Arrivals</Link>
               <Link to="/#collections" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>Collections</Link>
               <Link to="/order-tracking" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>Track Order</Link>
+              
+              {!isLoggedIn && (
+                <>
+                  <Link to="/login" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>Login</Link>
+                  <Link to="/register" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>Register</Link>
+                </>
+              )}
+              
+              {isLoggedIn && (
+                <button 
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="text-left hover:text-primary transition-colors"
+                >
+                  Log Out
+                </button>
+              )}
             </div>
           </div>
         )}

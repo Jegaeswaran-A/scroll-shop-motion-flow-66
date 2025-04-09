@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById } from '@/data/products';
@@ -7,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, ArrowLeft, Plus, Minus } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useQuery } from '@tanstack/react-query';
+import * as api from '@/api/apiClient';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,8 +15,18 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  
+  const { data: apiData, isError } = useQuery({
+    queryKey: ['product', id],
+    queryFn: () => id ? api.getProductById(id) : Promise.reject('No ID provided'),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 1,
+    retryDelay: 1000,
+    enabled: !!id,
+  });
 
-  const product = id ? getProductById(id) : undefined;
+  const fallbackProduct = id ? getProductById(id) : undefined;
+  const product = apiData?.data && !isError ? apiData.data : fallbackProduct;
 
   useEffect(() => {
     window.scrollTo(0, 0);

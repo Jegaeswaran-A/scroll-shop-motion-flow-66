@@ -1,13 +1,28 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useInView } from '@/hooks/useInView';
 import { getFeaturedProducts } from '@/data/products';
 import ProductCard from './ProductCard';
+import { useQuery } from '@tanstack/react-query';
+import * as api from '@/api/apiClient';
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState(getFeaturedProducts());
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { threshold: 0.1 });
+  
+  const { data, isError } = useQuery({
+    queryKey: ['featuredProducts'],
+    queryFn: api.getFeaturedProducts,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 1,
+    retryDelay: 1000,
+  });
+
+  useEffect(() => {
+    if (data?.data && !isError) {
+      setProducts(data.data);
+    }
+  }, [data, isError]);
   
   return (
     <section id="featured" className="py-20 px-4" ref={ref}>
