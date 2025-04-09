@@ -74,15 +74,7 @@
   }
   
   .scroll-section {
-    height: 100vh;
-    scroll-snap-align: start;
-  }
-  
-  .scroll-container {
-    scroll-behavior: smooth;
-    scroll-snap-type: y mandatory;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 4rem 0;
   }
 }

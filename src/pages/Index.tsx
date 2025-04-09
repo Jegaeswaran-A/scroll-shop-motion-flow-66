@@ -11,7 +11,7 @@ const Index = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <main className="bg-background text-foreground min-h-screen scroll-container" ref={scrollContainerRef}>
+    <main className="bg-background text-foreground min-h-screen" ref={scrollContainerRef}>
       <Navbar />
       <Hero />
       <FeaturedProducts />

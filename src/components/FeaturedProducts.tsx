@@ -10,7 +10,7 @@ const FeaturedProducts = () => {
   const isInView = useInView(ref, { threshold: 0.1 });
   
   return (
-    <section id="featured" className="scroll-section py-20 px-4" ref={ref}>
+    <section id="featured" className="py-20 px-4" ref={ref}>
       <div className="container max-w-7xl mx-auto">
         <div className={`text-center mb-12 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Products</h2>
