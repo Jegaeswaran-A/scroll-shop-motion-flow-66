@@ -14,11 +14,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import * as api from "@/api/apiClient";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const formSchema = z
   .object({
@@ -37,6 +39,7 @@ type FormValues = z.infer<typeof formSchema>;
 const Register = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -51,21 +54,26 @@ const Register = () => {
   const registerMutation = useMutation({
     mutationFn: api.register,
     onSuccess: (response) => {
+      console.log("Registration successful:", response.data);
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       
-      toast({
-        title: "Registration successful",
+      toast("Registration successful", {
         description: `Welcome to LUXE, ${user.name}!`,
       });
       
       navigate("/");
     },
     onError: (error: any) => {
-      toast({
-        title: "Registration failed",
-        description: error.response?.data?.message || "An error occurred during registration",
+      console.error("Registration error:", error);
+      const errorMessage = error.response?.data?.message || 
+        error.message || 
+        "An error occurred during registration";
+      
+      setError(errorMessage);
+      toast("Registration failed", {
+        description: errorMessage,
         variant: "destructive",
       });
       setIsLoading(false);
@@ -74,12 +82,16 @@ const Register = () => {
 
   const onSubmit = (data: FormValues) => {
     setIsLoading(true);
+    setError("");
+    console.log("Submitting registration form:", { ...data, password: "***" });
+    
     // Create a new object with required properties to ensure type safety
     const registerData = {
       name: data.name,
       email: data.email,
       password: data.password
     };
+    
     registerMutation.mutate(registerData);
   };
 
@@ -95,6 +107,13 @@ const Register = () => {
               Sign up to start shopping with LUXE
             </p>
           </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -155,7 +174,15 @@ const Register = () => {
               />
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Register"}
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating Account...
+                  </div>
+                ) : "Create Account"}
               </Button>
             </form>
           </Form>
