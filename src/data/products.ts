@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -9,7 +8,7 @@ export interface Product {
   featured: boolean;
 }
 
-export const products: Product[] = [
+export const products = [
   {
     id: "1",
     name: "Minimalist Watch",

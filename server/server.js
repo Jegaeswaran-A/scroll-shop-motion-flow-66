@@ -1,11 +1,11 @@
 
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const productsRoutes = require('./routes/products');
-const authRoutes = require('./routes/auth');
-const { products } = require('../src/data/products');
-const Product = require('./models/Product');
+import express from 'express';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import productsRoutes from './routes/products.js';
+import authRoutes from './routes/auth.js';
+import { products } from '../src/data/products.js';
+import Product from './models/Product.js';
 
 const app = express();
 
