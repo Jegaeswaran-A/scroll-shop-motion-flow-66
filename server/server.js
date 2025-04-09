@@ -4,7 +4,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import productsRoutes from './routes/products.js';
 import authRoutes from './routes/auth.js';
-import { products } from '../src/data/products.js';
+import { products } from './data/products.js';  // Updated import path
 import Product from './models/Product.js';
 
 const app = express();

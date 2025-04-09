@@ -1,7 +1,8 @@
 
-const express = require('express');
+import express from 'express';
+import Product from '../models/Product.js';
+
 const router = express.Router();
-const Product = require('../models/Product');
 
 // Get all products
 router.get('/', async (req, res) => {
@@ -36,4 +37,4 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
