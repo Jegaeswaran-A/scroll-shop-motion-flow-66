@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import * as api from "@/api/apiClient";
 import Navbar from "@/components/Navbar";
@@ -59,7 +59,8 @@ const Register = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       
-      toast("Registration successful", {
+      toast({
+        title: "Registration successful",
         description: `Welcome to LUXE, ${user.name}!`,
       });
       
@@ -72,7 +73,8 @@ const Register = () => {
         "An error occurred during registration";
       
       setError(errorMessage);
-      toast("Registration failed", {
+      toast({
+        title: "Registration failed",
         description: errorMessage,
         variant: "destructive",
       });
