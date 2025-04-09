@@ -1,16 +1,9 @@
 
 import { ShoppingBag, X, Plus, Minus, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+import { useCart } from '@/contexts/CartContext';
+import { Link } from 'react-router-dom';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -18,46 +11,7 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ isOpen, setIsOpen }: CartDrawerProps) => {
-  // Sample cart items
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Minimalist Watch',
-      price: 129.99,
-      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
-      quantity: 1
-    },
-    {
-      id: '2',
-      name: 'Premium Headphones',
-      price: 249.99,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
-      quantity: 1
-    },
-    {
-      id: '3',
-      name: 'Wireless Earbuds',
-      price: 89.99,
-      image: 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb',
-      quantity: 1
-    }
-  ]);
-
-  const updateQuantity = (id: string, delta: number) => {
-    setCartItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQuantity = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    }));
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const { cartItems, updateQuantity, removeItem, subtotal, clearCart } = useCart();
 
   return (
     <div className={cn(
@@ -91,7 +45,7 @@ const CartDrawer = ({ isOpen, setIsOpen }: CartDrawerProps) => {
           <>
             <div className="flex-1 overflow-y-auto space-y-6">
               {cartItems.map(item => (
-                <div key={item.id} className="flex border-b border-border pb-4">
+                <div key={item.id} className="flex border-b border-border pb-4 animate-fade-in">
                   <div className="w-20 h-20 bg-secondary rounded overflow-hidden flex-shrink-0">
                     <img 
                       src={item.image} 
@@ -105,14 +59,14 @@ const CartDrawer = ({ isOpen, setIsOpen }: CartDrawerProps) => {
                     <div className="flex justify-between items-center mt-2">
                       <div className="flex items-center">
                         <button 
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           className="p-1 rounded hover:bg-secondary"
                         >
                           <Minus size={14} />
                         </button>
                         <span className="mx-2">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.id, 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           className="p-1 rounded hover:bg-secondary"
                         >
                           <Plus size={14} />
@@ -135,7 +89,11 @@ const CartDrawer = ({ isOpen, setIsOpen }: CartDrawerProps) => {
                 <span>Subtotal</span>
                 <span className="font-semibold">${subtotal.toFixed(2)}</span>
               </div>
-              <Button className="w-full mb-2">Checkout Now</Button>
+              <Link to="/checkout">
+                <Button className="w-full mb-2" onClick={() => setIsOpen(false)}>
+                  Checkout Now
+                </Button>
+              </Link>
               <Button variant="outline" className="w-full" onClick={() => setIsOpen(false)}>
                 Continue Shopping
               </Button>
