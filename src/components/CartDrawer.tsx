@@ -11,7 +11,7 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ isOpen, setIsOpen }: CartDrawerProps) => {
-  const { cartItems, updateQuantity, removeItem, subtotal, clearCart } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, subtotal, clearCart } = useCart();
 
   return (
     <div className={cn(
@@ -73,7 +73,7 @@ const CartDrawer = ({ isOpen, setIsOpen }: CartDrawerProps) => {
                         </button>
                       </div>
                       <button 
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeFromCart(item.id)}
                         className="text-muted-foreground hover:text-destructive"
                       >
                         <Trash2 size={16} />
